@@ -8,10 +8,11 @@ function App() {
   const [guessLetters, setGuessLetters] = useState([]);
 
   const [words, setWords] = useState("");
-  const [countWords, setCountWords] = useState(0);
   const [countFail, setCountFail] = useState(0);
   const [gameOver, setGameOver] = useState(false);
   const [win, setWin] = useState(false);
+  const [startWord, setStartWords] = useState(true);
+  const [start, setStart] = useState(false);
 
   //Dodac upper albo lowe dla kazdej litery
   //Dodac blokade dla spacji oraz wymyslec sposob aby odrazu pokazywal spacje
@@ -20,6 +21,8 @@ function App() {
     if (e.key === "Enter") {
       setWords(inputWords);
       setInputWords("");
+      setStart(true);
+      setStartWords(false);
     }
   };
   const toInputUppercase = (e) => {
@@ -51,17 +54,17 @@ function App() {
   };
 
   const createWordElement = () => {
-    const modifiedWords = words.replace(/ /g, "  ");
+    const modifiedWords = words.replace("  ");
     const wordsArray = modifiedWords.split("");
 
-    console.log(guessLetters);
+    console.log(guessLetters, words);
 
     return wordsArray.map((word, index) => {
       return (
         <span
           key={index}
           style={{
-            borderBottom: ".1em solid black",
+            borderBottom: ".2em solid black",
             margin: "5px",
           }}
         >
@@ -86,32 +89,39 @@ function App() {
           alignItems: "center",
         }}
       >
-        <input
-          placeholder="words"
-          type="text"
-          value={inputWords}
-          onInput={toInputUppercase}
-          onKeyDown={handleKeyPress}
-          onChange={(e) => setInputWords(e.target.value)}
-        />
+        {startWord == true && (
+          <input
+            placeholder="words"
+            type="text"
+            value={inputWords}
+            onInput={toInputUppercase}
+            onKeyDown={handleKeyPress}
+            onChange={(e) => setInputWords(e.target.value)}
+          />
+        )}
       </div>
-      <div>
-        <input
-          disabled={countFail === 7}
-          placeholder="Guess Letters"
-          type="text"
-          value={inputGuessLetters}
-          onInput={toInputUppercase}
-          onKeyDown={handleGuessKeyPress}
-          onChange={handleGuessLetterChange}
-        />
-      </div>
+      {start == true && (
+        <div>
+          <input
+            disabled={gameOver}
+            placeholder="Guess Letters"
+            type="text"
+            value={inputGuessLetters}
+            // onInput={toInputUppercase}
+            maxLength={1}
+            // onKeyDown={handleGuessKeyPress}
+            onChange={handleGuessLetterChange}
+          />
+
+          <div>
+            <h1>Fail: {countFail} / 7</h1>
+            {gameOver && <h1>Game Over!</h1>}
+            {gameOver && <h1>Correct word is "{words}"</h1>}
+            {win && <h1>You Win!</h1>}
+          </div>
+        </div>
+      )}
       <div>{createWordElement()}</div>
-      <div>
-        <h1>Fail: {countFail} / 7</h1>
-        {gameOver && <h1>Game Over!</h1>}
-        {win && <h1>You Win!</h1>}
-      </div>
     </div>
   );
 }
